@@ -1,0 +1,25 @@
+{
+  "name": "subpixel-snake",
+  "version": "1.0.0",
+  "description": "Subpixel Snake",
+  "main": "src/index.html",
+  "scripts": {
+    "start": "parcel src/index.html --open",
+    "build": "parcel build src/index.html",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/patorjk/subpixel-snake.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/patorjk/subpixel-snake/issues"
+  },
+  "homepage": "https://github.com/patorjk/subpixel-snake#readme",
+  "devDependencies": {
+    "parcel-bundler": "^1.6.1",
+    "prettier": "3.4.2"
+  }
+}
