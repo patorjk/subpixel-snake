@@ -14,6 +14,23 @@ if (!window.SNAKE) {
   window.SNAKE = {};
 }
 
+function getTopPosition(row) {
+  return row + 'px';
+}
+function getLeftPosition(col) {
+  return Math.floor(col / 3) + 'px';
+}
+
+function getPixelColor(col) {
+  if (col % 3 === 0) {
+    return 'rgb(255, 0, 0)';
+  } else if (col % 3 === 1) {
+    return 'rgb(0, 255, 0)';
+  } else {
+    return 'rgb(0, 0, 255)';
+  }
+}
+
 /**
  * @method addEventListener
  * @param {Object} obj The object to add an event listener to.
@@ -74,8 +91,6 @@ SNAKE.Snake = SNAKE.Snake || (function () {
     this.elmStyle = null;
     this.row = -1;
     this.col = -1;
-    this.xPos = -1000;
-    this.yPos = -1000;
     this.next = null;
     this.prev = null;
   };
@@ -123,15 +138,13 @@ SNAKE.Snake = SNAKE.Snake || (function () {
     const growthIncr = 5;
     const columnShift = [0, 1, 0, -1];
     const rowShift = [-1, 0, 1, 0];
-    const xPosShift = [];
-    const yPosShift = [];
 
     let lastMove = 1,
       preMove = -1,
       isFirstMove = true,
       isFirstGameMove = true,
       currentDirection = -1, // 0: up, 1: left, 2: down, 3: right
-      snakeSpeed = 280,
+      snakeSpeed = 2500,
       isDead = false,
       isPaused = false;
 
@@ -140,13 +153,11 @@ SNAKE.Snake = SNAKE.Snake || (function () {
     me.snakeBody["b0"] = new SnakeBlock(); // create snake head
     me.snakeBody["b0"].row = config.startRow || 1;
     me.snakeBody["b0"].col = config.startCol || 1;
-    me.snakeBody["b0"].xPos = me.snakeBody["b0"].row * playingBoard.getBlockWidth();
-    me.snakeBody["b0"].yPos = me.snakeBody["b0"].col * playingBoard.getBlockHeight();
     me.snakeBody["b0"].elm = createSnakeElement();
     me.snakeBody["b0"].elmStyle = me.snakeBody["b0"].elm.style;
     playingBoard.getBoardContainer().appendChild(me.snakeBody["b0"].elm);
-    me.snakeBody["b0"].elm.style.left = me.snakeBody["b0"].xPos + "px";
-    me.snakeBody["b0"].elm.style.top = me.snakeBody["b0"].yPos + "px";
+    me.snakeBody["b0"].elm.style.left = getLeftPosition(me.snakeBody["b0"].col);
+    me.snakeBody["b0"].elm.style.top = getTopPosition(me.snakeBody["b0"].row);
     me.snakeBody["b0"].elm.style.backgroundColor = 'red';
     me.snakeBody["b0"].next = me.snakeBody["b0"];
     me.snakeBody["b0"].prev = me.snakeBody["b0"];
@@ -204,16 +215,6 @@ SNAKE.Snake = SNAKE.Snake || (function () {
 
       isDead = true;
       handleFunc();
-    }
-
-    function getSnakeColor(num) {
-      if (num % 3 === 0) {
-        return 'rgb(255, 0, 0)';
-      } else if (num % 3 === 1) {
-        return 'rgb(0, 255, 0)';
-      } else {
-        return 'rgb(0, 0, 255)';
-      }
     }
 
     // ----- public methods -----
@@ -316,17 +317,16 @@ SNAKE.Snake = SNAKE.Snake || (function () {
 
       newHead.col = oldHead.col + columnShift[lastMove];
       newHead.row = oldHead.row + rowShift[lastMove];
-      newHead.xPos = oldHead.xPos + xPosShift[lastMove];
-      newHead.yPos = oldHead.yPos + yPosShift[lastMove];
 
       if (!newHead.elmStyle) {
         newHead.elmStyle = newHead.elm.style;
       }
 
-      const newCol = Math.floor(newHead.xPos / 3);
-      newHead.elmStyle.left = newCol + "px";
-      newHead.elmStyle.top = newHead.yPos + "px";
-      newHead.elmStyle.backgroundColor = getSnakeColor(newCol);
+      console.log(getLeftPosition(newHead.col))
+
+      newHead.elmStyle.left = getLeftPosition(newHead.col);
+      newHead.elmStyle.top = getTopPosition(newHead.row);
+      newHead.elmStyle.backgroundColor = getPixelColor(newHead.col);
 
       if (me.snakeLength > 1) {
         newHead.elm.id = "snake-snakehead-alive";
@@ -342,6 +342,8 @@ SNAKE.Snake = SNAKE.Snake || (function () {
           me.go();
         }, snakeSpeed);
       } else if (grid[newHead.row][newHead.col] > 0) {
+        console.log(grid);
+        console.log('dead')
         me.handleDeath();
       } else if (grid[newHead.row][newHead.col] === playingBoard.getGridFoodValue()) {
         grid[newHead.row][newHead.col] = 1;
@@ -459,28 +461,16 @@ SNAKE.Snake = SNAKE.Snake || (function () {
       me.snakeHead.elm.id = "snake-snakehead-alive";
       me.snakeHead.row = config.startRow || 1;
       me.snakeHead.col = config.startCol || 1;
-      me.snakeHead.xPos = me.snakeHead.row * playingBoard.getBlockWidth();
-      me.snakeHead.yPos = me.snakeHead.col * playingBoard.getBlockHeight();
 
-      const newCol = Math.floor(me.snakeHead.xPos / 3);
-      me.snakeHead.elm.style.backgroundColor = getSnakeColor(newCol);
-      me.snakeHead.elm.style.left = newCol + "px";
-      me.snakeHead.elm.style.top = me.snakeHead.yPos + "px";
+      me.snakeHead.elm.style.backgroundColor = getPixelColor(me.snakeHead.col);
+      me.snakeHead.elm.style.left = getLeftPosition(me.snakeHead.col);
+      me.snakeHead.elm.style.top = getTopPosition(me.snakeHead.row);
     };
 
     // ---------------------------------------------------------------------
     // Initialize
     // ---------------------------------------------------------------------
     createBlocks(growthIncr * 2);
-    xPosShift[0] = 0;
-    xPosShift[1] = playingBoard.getBlockWidth();
-    xPosShift[2] = 0;
-    xPosShift[3] = -1 * playingBoard.getBlockWidth();
-
-    yPosShift[0] = -1 * playingBoard.getBlockHeight();
-    yPosShift[1] = 0;
-    yPosShift[2] = playingBoard.getBlockHeight();
-    yPosShift[3] = 0;
   };
 })();
 
@@ -576,8 +566,9 @@ SNAKE.Food = SNAKE.Food || (function () {
       playingBoard.grid[row][col] = playingBoard.getGridFoodValue();
       fRow = row;
       fColumn = col;
-      elmFood.style.top = row * playingBoard.getBlockHeight() + "px";
-      elmFood.style.left = col * playingBoard.getBlockWidth() + "px";
+      elmFood.style.top = getTopPosition(row);
+      elmFood.style.left = getLeftPosition(col);
+      elmFood.style.backgroundColor = getPixelColor(col);
       return true;
     };
   };
