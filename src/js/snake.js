@@ -23,9 +23,9 @@ function getLeftPosition(col) {
 
 function getPixelColor(col) {
   if (col % 3 === 0) {
-    return 'rgb(255, 0, 0)';
+    return 'rgb(200, 0, 0)';
   } else if (col % 3 === 1) {
-    return 'rgb(0, 255, 0)';
+    return 'rgb(0, 80, 0)';
   } else {
     return 'rgb(0, 0, 255)';
   }
@@ -129,13 +129,14 @@ SNAKE.Snake = SNAKE.Snake || (function () {
       return;
     }
     if (localStorage.jsSnakeHighScore === undefined) localStorage.setItem('jsSnakeHighScore', 0);
+    if (localStorage.snakeSpeed === undefined) localStorage.setItem('snakeSpeed', 100);
 
     // ----- private variables -----
 
     const me = this;
     const playingBoard = config.playingBoard;
     const myId = instanceNumber++;
-    const growthIncr = 5;
+    const growthIncr = 1;
     const columnShift = [0, 1, 0, -1];
     const rowShift = [-1, 0, 1, 0];
 
@@ -144,7 +145,7 @@ SNAKE.Snake = SNAKE.Snake || (function () {
       isFirstMove = true,
       isFirstGameMove = true,
       currentDirection = -1, // 0: up, 1: left, 2: down, 3: right
-      snakeSpeed = 2500,
+      snakeSpeed = localStorage.snakeSpeed,
       isDead = false,
       isPaused = false;
 
@@ -158,7 +159,7 @@ SNAKE.Snake = SNAKE.Snake || (function () {
     playingBoard.getBoardContainer().appendChild(me.snakeBody["b0"].elm);
     me.snakeBody["b0"].elm.style.left = getLeftPosition(me.snakeBody["b0"].col);
     me.snakeBody["b0"].elm.style.top = getTopPosition(me.snakeBody["b0"].row);
-    me.snakeBody["b0"].elm.style.backgroundColor = 'red';
+    me.snakeBody["b0"].elm.style.backgroundColor = getPixelColor(me.snakeBody["b0"].col);
     me.snakeBody["b0"].next = me.snakeBody["b0"];
     me.snakeBody["b0"].prev = me.snakeBody["b0"];
 
@@ -243,11 +244,6 @@ SNAKE.Snake = SNAKE.Snake || (function () {
         return;
       }
 
-      const snakeLength = me.snakeLength;
-
-      //console.log("lastmove="+lastMove);
-      //console.log("dir="+keyNum);
-
       let directionFound = -1;
 
       switch (keyNum) {
@@ -322,8 +318,6 @@ SNAKE.Snake = SNAKE.Snake || (function () {
         newHead.elmStyle = newHead.elm.style;
       }
 
-      console.log(getLeftPosition(newHead.col))
-
       newHead.elmStyle.left = getLeftPosition(newHead.col);
       newHead.elmStyle.top = getTopPosition(newHead.row);
       newHead.elmStyle.backgroundColor = getPixelColor(newHead.col);
@@ -342,8 +336,6 @@ SNAKE.Snake = SNAKE.Snake || (function () {
           me.go();
         }, snakeSpeed);
       } else if (grid[newHead.row][newHead.col] > 0) {
-        console.log(grid);
-        console.log('dead')
         me.handleDeath();
       } else if (grid[newHead.row][newHead.col] === playingBoard.getGridFoodValue()) {
         grid[newHead.row][newHead.col] = 1;
@@ -463,9 +455,19 @@ SNAKE.Snake = SNAKE.Snake || (function () {
       me.snakeHead.col = config.startCol || 1;
 
       me.snakeHead.elm.style.backgroundColor = getPixelColor(me.snakeHead.col);
+
       me.snakeHead.elm.style.left = getLeftPosition(me.snakeHead.col);
       me.snakeHead.elm.style.top = getTopPosition(me.snakeHead.row);
     };
+
+    me.getSpeed = () => {
+      return snakeSpeed;
+    }
+
+    me.setSpeed = (speed) => {
+      snakeSpeed = speed;
+      localStorage.setItem('snakeSpeed', speed);
+    }
 
     // ---------------------------------------------------------------------
     // Initialize
@@ -737,6 +739,7 @@ SNAKE.Board = SNAKE.Board || (function () {
      */
     me.resetBoard = function () {
       SNAKE.removeEventListener(elmContainer, "keydown", myKeyListener, false);
+      SNAKE.removeEventListener(elmContainer, "keybuttonpress", myKeyListener, false);
       mySnake.reset();
       config.onLengthUpdate(1);
       me.setupPlayingField();
@@ -849,9 +852,7 @@ SNAKE.Board = SNAKE.Board || (function () {
       myFood.randomlyPlaceFood();
 
       myKeyListener = function (evt) {
-        console.log('key')
-        if (!evt) evt = window.event;
-        const keyNum = (evt.which) ? evt.which : evt.keyCode;
+        const keyNum = evt?.detail?.buttonPress ? evt?.detail?.keyCode : (evt.which) ? evt.which : evt.keyCode;
 
         if (me.getBoardState() === 1) {
           if (!(keyNum >= 37 && keyNum <= 40) && !(keyNum === 87 || keyNum === 65 || keyNum === 83 || keyNum === 68)) {
@@ -860,10 +861,10 @@ SNAKE.Board = SNAKE.Board || (function () {
 
           // This removes the listener added at the #listenerX line
           SNAKE.removeEventListener(elmContainer, "keydown", myKeyListener, false);
+          SNAKE.removeEventListener(elmContainer, "keybuttonpress", myKeyListener, false);
 
           myKeyListener = function (evt) {
-            if (!evt) evt = window.event;
-            const keyNum = (evt.which) ? evt.which : evt.keyCode;
+            const keyNum = evt?.detail?.buttonPress ? evt?.detail?.keyCode : (evt.which) ? evt.which : evt.keyCode;
 
             if (keyNum === 32) {
               if (me.getBoardState() != 0)
@@ -882,6 +883,7 @@ SNAKE.Board = SNAKE.Board || (function () {
             return false;
           };
           SNAKE.addEventListener(elmContainer, "keydown", myKeyListener, false);
+          SNAKE.addEventListener(elmContainer, "keybuttonpress", myKeyListener, false);
 
           mySnake.rebirth();
           mySnake.handleArrowKeys(keyNum);
@@ -901,6 +903,7 @@ SNAKE.Board = SNAKE.Board || (function () {
 
       // Search for #listenerX to see where this is removed
       SNAKE.addEventListener(elmContainer, "keydown", myKeyListener, false);
+      SNAKE.addEventListener(elmContainer, "keybuttonpress", myKeyListener, false);
     };
 
     /**
@@ -938,6 +941,13 @@ SNAKE.Board = SNAKE.Board || (function () {
       handleEndCondition();
     };
 
+    me.setSpeed = (speed) => {
+      mySnake.setSpeed(speed);
+    };
+    me.getSpeed = () => {
+      return mySnake.getSpeed();
+    };
+
     // ---------------------------------------------------------------------
     // Initialize
     // ---------------------------------------------------------------------
@@ -967,7 +977,7 @@ SNAKE.Board = SNAKE.Board || (function () {
       me.getBoardContainer().focus();
     };
 
-    config.onInit({reloadGame})
+    config.onInit({reloadGame, getSpeed: me.getSpeed, setSpeed: me.setSpeed})
 
   }; // end return function
 })();

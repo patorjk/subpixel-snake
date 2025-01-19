@@ -14,8 +14,16 @@ body {
 	padding:0px;
 }
 
+#game-area:focus {
+    outline: -webkit-focus-ring-color auto 1px;
+}
+
 #game-area {
     outline-offset: 2px;
+}
+
+.arrow-button {
+    padding: 2rem;
 }
 
 .snake-snakebody-block {

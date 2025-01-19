@@ -6,8 +6,10 @@ const mySnakeBoard = new SNAKE.Board({
   premoveOnPause: false,
   columns: 15,
   rows: 15,
+  startRow: 3,
+  startCol: 3,
   onLengthUpdate: (length) => {
-    console.log(length);
+    document.getElementById('message').innerHTML = `Length: ${length}`;
   },
   onPauseToggle: (isPaused) => {
     if (isPaused) {
@@ -19,6 +21,14 @@ const mySnakeBoard = new SNAKE.Board({
   onInit: (params) => {
     params.reloadGame();
     reloadGame = params.reloadGame;
+
+    document.getElementById('speed').value = params.getSpeed();
+
+    document.getElementById('speed').addEventListener('change', (evt) => {
+      const speed = parseInt(evt.target.value, 10);
+      params.setSpeed(speed);
+    });
+
   },
   onWin: () => {
     document.getElementById('message').innerHTML = '<div>You win! :D</div> <button id="playAgain">Play again</button>';
@@ -37,7 +47,8 @@ const mySnakeBoard = new SNAKE.Board({
         reloadGame();
         document.getElementById('game-area').focus();
         document.getElementById('message').innerHTML = '';
-      })
+      });
+      document.getElementById('playAgain').focus();
     }, 100);
   }
 });

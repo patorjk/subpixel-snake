@@ -9,7 +9,7 @@
   -->
   <meta charset="utf-8">
   <title>JavaScript Snake</title>
-  <link rel=stylesheet id="style" type="text/css" href="./css/main-snake.css?6" />
+  <link rel=stylesheet id="style" type="text/css" href="./css/main-snake.css?version=3" />
   <link rel="shortcut icon" href="css/images/favicon.png" />
 </head>
 <body>
@@ -23,17 +23,104 @@
     <div id="game-area" tabindex="0" style="width:500px;height:1500px;"></div>
     <div id="message" style="margin-top:1rem;display:flex;gap:2rem;">
     </div>
-    <div style="margin-top:1rem;display:flex;flex-direction:row;gap:2rem;">
-      <div id="snakeLength">Length: 1</div>
-      <div id="highScore">High score: 1</div>
+    <div style="margin-top:1rem;display:flex;flex-direction:column;gap:2rem;">
+      <div style="margin-top:1rem;display:flex;flex-direction:row;gap:2rem;justify-content: center;">
+        <div id="snakeLength">Length: 1</div>
+        <div id="highScore">High score: 1</div>
+      </div>
+      <div id="speed-section" style="display:flex;justify-content: center;"><label for="speed">Snake speed:</label> <input id="speed" type="number" min="50"/></div>
+      <div id="options-section" style="display:flex;justify-content: center;"><input type="checkbox" id="useButtons"/><label for="useButtons">Use buttons for arrow keys</label></div>
+
+      <div id="buttons" style="display:none;">
+        <div style="display:flex;justify-content:center;gap:1rem;margin-top:0rem;">
+          <button id="leftArrow" class="arrow-button">←</button>
+          <button id="rightArrow" class="arrow-button">→</button>
+          <button id="upArrow" class="arrow-button">↑</button>
+          <button id="downArrow" class="arrow-button">↓</button>
+        </div>
+      </div>
+
+      <div id="dpr" style="display:flex;flex-direction:row;gap:0.25rem">Device pixel ratio: <div id="pixelRatio"></div><div id="ratioMessage" style="display:none;font-weight:bold;">(The ratio needs to be 1 for this to work, please zoom in or out)</div></div>
+
+      <div style="display:flex;flex-direction:row;gap:0.25rem;align-self:center;">
+        <a href="https://patorjk.com/">patorjk.com</a>
+      </div>
     </div>
   </div>
 
-<script>document.write('<script src="./js/snake.js?dev=' + Math.floor(Math.random() * 100) + '"\><\/script>');</script>
-<script>document.write('<script src="./js/init.js?dev=' + Math.floor(Math.random() * 100) + '"\><\/script>');</script>
-<!--
-<script type="text/javascript" src="./js/snake.js"></script>
-<script type="text/javascript" src="./js/init.js"></script>
--->
+  <script type="text/javascript" src="./js/snake.js?version=x6"></script>
+  <script type="text/javascript" src="./js/init.js?version=x6"></script>
+
+  <script>
+    const updateRatio = () => {
+      let ratio = window.devicePixelRatio;
+      document.getElementById('pixelRatio').innerHTML = ratio;
+
+      if (ratio !== 1) {
+        document.getElementById('ratioMessage').style.display = 'block';
+      } else {
+        document.getElementById('ratioMessage').style.display = 'none';
+      }
+    }
+    updateRatio();
+    window.addEventListener('resize', updateRatio);
+
+    document.getElementById('dpr').addEventListener('click', updateRatio);
+
+    // the user may try to use the arrow keys without the game focused, so if they do, focus the game board
+    window.addEventListener('keyup', (evt) => {
+      const theKeys = {
+        "ArrowLeft"  : true,
+        "ArrowRight" : true,
+        "ArrowUp"    : true,
+        "ArrowDown"  : true,
+      }
+      if (theKeys[evt.key]) {
+        document.getElementById('game-area').focus();
+      }
+      console.log(evt.key);
+      if (evt.key === '0') {
+        console.log('1')
+        if (document.getElementById('playAgain')) {
+          console.log('2');
+          document.getElementById('playAgain').click();
+        }
+      }
+    });
+
+    document.getElementById('useButtons').addEventListener('change', (evt) => {
+      if (evt.currentTarget.checked) {
+        document.getElementById('buttons').style.display = 'block';
+      } else {
+        document.getElementById('buttons').style.display = 'none';
+      }
+    });
+
+    document.getElementById('rightArrow').addEventListener('click', () => {
+      const evt = new CustomEvent("keybuttonpress", {detail: {key:"ArrowRight", keyCode: 39, buttonPress: true}});
+      document.getElementById('game-area').focus();
+      document.getElementById('game-area').dispatchEvent(evt);
+    });
+
+    document.getElementById('leftArrow').addEventListener('click', () => {
+      const evt = new CustomEvent("keybuttonpress", {detail: {key:"ArrowLeft", keyCode: 37, buttonPress: true}});
+      document.getElementById('game-area').focus();
+      document.getElementById('game-area').dispatchEvent(evt);
+    });
+
+    document.getElementById('upArrow').addEventListener('click', () => {
+      const evt = new CustomEvent("keybuttonpress", {detail: {key:"ArrowUp", keyCode: 38, buttonPress: true}});
+      document.getElementById('game-area').focus();
+      document.getElementById('game-area').dispatchEvent(evt);
+    });
+
+    document.getElementById('downArrow').addEventListener('click', () => {
+      const evt = new CustomEvent("keybuttonpress", {detail: {key:"ArrowDown", keyCode: 40, buttonPress: true}});
+      document.getElementById('game-area').focus();
+      document.getElementById('game-area').dispatchEvent(evt);
+    });
+
+  </script>
+
 </body>
 </html>
