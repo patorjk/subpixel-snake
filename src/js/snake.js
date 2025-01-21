@@ -23,9 +23,9 @@ function getLeftPosition(col) {
 
 function getPixelColor(col) {
   if (col % 3 === 0) {
-    return 'rgb(200, 0, 0)';
+    return 'lab(0 0 1000)';
   } else if (col % 3 === 1) {
-    return 'rgb(0, 80, 0)';
+    return 'lab(0 -1000 0)';
   } else {
     return 'rgb(0, 0, 255)';
   }

@@ -5,7 +5,7 @@ const mySnakeBoard = new SNAKE.Board({
   fullScreen: false,
   premoveOnPause: false,
   columns: 15,
-  rows: 15,
+  rows: 7,
   startRow: 3,
   startCol: 3,
   onLengthUpdate: (length) => {
