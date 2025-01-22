@@ -9,6 +9,8 @@ http://patorjk.com/games/snake
  * @class SNAKE
  */
 
+const HIGH_SCORE_KEY = 'jsSubpixelSnakeHighScore';
+
 // this will allow us to access the game in other JS files when the app is loaded up in a codesandbox.com sandbox, that's the only reason it's here
 if (!window.SNAKE) {
   window.SNAKE = {};
@@ -23,9 +25,9 @@ function getLeftPosition(col) {
 
 function getPixelColor(col) {
   if (col % 3 === 0) {
-    return 'lab(0 0 1000)';
+    return 'lab(0 0 9000)';
   } else if (col % 3 === 1) {
-    return 'lab(0 -1000 0)';
+    return 'lab(0 -9000 0)';
   } else {
     return 'rgb(0, 0, 255)';
   }
@@ -128,7 +130,7 @@ SNAKE.Snake = SNAKE.Snake || (function () {
     if (!config || !config.playingBoard) {
       return;
     }
-    if (localStorage.jsSnakeHighScore === undefined) localStorage.setItem('jsSnakeHighScore', 0);
+    if (localStorage[HIGH_SCORE_KEY] === undefined) localStorage.setItem(HIGH_SCORE_KEY, 0);
     if (localStorage.snakeSpeed === undefined) localStorage.setItem('snakeSpeed', 100);
 
     // ----- private variables -----
@@ -201,10 +203,10 @@ SNAKE.Snake = SNAKE.Snake || (function () {
     }
 
     function recordScore() {
-      const highScore = localStorage.jsSnakeHighScore;
+      const highScore = localStorage[HIGH_SCORE_KEY];
       if (me.snakeLength > highScore) {
         alert('Congratulations! You have beaten your previous high score, which was ' + highScore + '.');
-        localStorage.setItem('jsSnakeHighScore', me.snakeLength);
+        localStorage.setItem(HIGH_SCORE_KEY, me.snakeLength);
       }
     }
 
@@ -914,8 +916,8 @@ SNAKE.Board = SNAKE.Board || (function () {
      */
     me.foodEaten = function () {
       config.onLengthUpdate(mySnake.snakeLength)
-      if (mySnake.snakeLength > localStorage.jsSnakeHighScore) {
-        localStorage.setItem("jsSnakeHighScore", mySnake.snakeLength);
+      if (mySnake.snakeLength > localStorage[HIGH_SCORE_KEY]) {
+        localStorage.setItem(HIGH_SCORE_KEY, mySnake.snakeLength);
       }
       if (!myFood.randomlyPlaceFood()) {
         return false;

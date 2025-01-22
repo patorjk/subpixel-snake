@@ -9,7 +9,7 @@ const mySnakeBoard = new SNAKE.Board({
   startRow: 3,
   startCol: 3,
   onLengthUpdate: (length) => {
-    document.getElementById('message').innerHTML = `Length: ${length}`;
+    document.getElementById('snakeLength').innerHTML = `${length}`;
   },
   onPauseToggle: (isPaused) => {
     if (isPaused) {
@@ -28,6 +28,7 @@ const mySnakeBoard = new SNAKE.Board({
       const speed = parseInt(evt.target.value, 10);
       params.setSpeed(speed);
     });
+    document.getElementById('highScore').innerHTML = localStorage.getItem(HIGH_SCORE_KEY) || 0;
 
   },
   onWin: () => {
@@ -37,7 +38,8 @@ const mySnakeBoard = new SNAKE.Board({
         reloadGame();
         document.getElementById('game-area').focus();
         document.getElementById('message').innerHTML = '';
-      })
+      });
+      document.getElementById('highScore').innerHTML = localStorage.getItem(HIGH_SCORE_KEY) || 0;
     }, 100);
   },
   onDeath: () => {
@@ -49,6 +51,7 @@ const mySnakeBoard = new SNAKE.Board({
         document.getElementById('message').innerHTML = '';
       });
       document.getElementById('playAgain').focus();
+      document.getElementById('highScore').innerHTML = localStorage.getItem(HIGH_SCORE_KEY) || 0;
     }, 100);
   }
 });
