@@ -131,7 +131,7 @@ SNAKE.Snake = SNAKE.Snake || (function () {
       return;
     }
     if (localStorage[HIGH_SCORE_KEY] === undefined) localStorage.setItem(HIGH_SCORE_KEY, 0);
-    if (localStorage.snakeSpeed === undefined) localStorage.setItem('snakeSpeed', 100);
+    if (localStorage.snakeSpeed === undefined) localStorage.setItem('snakeSpeed', 400);
 
     // ----- private variables -----
 

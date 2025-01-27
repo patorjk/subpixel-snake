@@ -28,7 +28,7 @@
         <div style="display:flex;flex-direction:row;">Length: <div id="snakeLength">1</div></div>
         <div style="display:flex;flex-direction:row;">High score: <div id="highScore">1</div></div>
       </div>
-      <div id="speed-section" style="display:flex;justify-content: center;"><label for="speed">Snake speed:</label> <input id="speed" type="number" min="50"/></div>
+      <div id="speed-section" style="display:flex;justify-content: center;gap:0.5rem;"><label for="speed">Time between snake moves in milliseconds:</label> <input id="speed" type="number" min="50"/></div>
       <div id="options-section" style="display:none;justify-content: center;"><input type="checkbox" id="useButtons"/><label for="useButtons">Use buttons for arrow keys</label></div>
 
       <div id="buttons" style="display:none;">
@@ -40,7 +40,7 @@
         </div>
       </div>
 
-      <div id="dpr" style="display:flex;flex-direction:row;gap:0.25rem">Device pixel ratio: <div id="pixelRatio"></div><div id="ratioMessage" style="display:none;font-weight:bold;">(The ratio needs to be 1 for this to work, please zoom in or out)</div></div>
+      <div id="dpr" style="display:flex;flex-direction:row;gap:0.25rem;justify-content:center;">Device pixel ratio: <div id="pixelRatio"></div><div id="ratioMessage" style="display:none;font-weight:bold;">(The ratio needs to be 1 for this to work, please zoom in or out)</div></div>
 
       <div style="display:flex;flex-direction:row;gap:0.25rem;align-self:center;">
         <a href="https://patorjk.com/">patorjk.com</a>
@@ -78,11 +78,9 @@
       if (theKeys[evt.key]) {
         document.getElementById('game-area').focus();
       }
-      console.log(evt.key);
+
       if (evt.key === '0') {
-        console.log('1')
         if (document.getElementById('playAgain')) {
-          console.log('2');
           document.getElementById('playAgain').click();
         }
       }
