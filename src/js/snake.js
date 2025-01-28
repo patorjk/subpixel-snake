@@ -25,8 +25,14 @@ function getLeftPosition(col) {
 
 function getPixelColor(col) {
   if (col % 3 === 0) {
+    /*
+      I came up with this color by simply playing around. I used the microscope and tweaked the values until the red pixel was isolated on my iMax
+     */
     return 'lab(0 0 9000)';
   } else if (col % 3 === 1) {
+    /*
+      I came up with this color by simply playing around. I used the microscope and tweaked the values until the green pixel was isolated on my iMax
+     */
     return 'lab(0 -9000 0)';
   } else {
     return 'rgb(0, 0, 255)';
@@ -610,36 +616,6 @@ SNAKE.Board = SNAKE.Board || (function () {
       }
     }
     return (highestIndex + 1);
-  }
-
-  /*
-      This function returns the width of the available screen real estate that we have
-  */
-  function getClientWidth() {
-    let myWidth = 0;
-    if (typeof window.innerWidth === "number") {
-      myWidth = window.innerWidth;//Non-IE
-    } else if (document.documentElement && (document.documentElement.clientWidth || document.documentElement.clientHeight)) {
-      myWidth = document.documentElement.clientWidth;//IE 6+ in 'standards compliant mode'
-    } else if (document.body && (document.body.clientWidth || document.body.clientHeight)) {
-      myWidth = document.body.clientWidth;//IE 4 compatible
-    }
-    return myWidth;
-  }
-
-  /*
-      This function returns the height of the available screen real estate that we have
-  */
-  function getClientHeight() {
-    let myHeight = 0;
-    if (typeof window.innerHeight === "number") {
-      myHeight = window.innerHeight;//Non-IE
-    } else if (document.documentElement && (document.documentElement.clientWidth || document.documentElement.clientHeight)) {
-      myHeight = document.documentElement.clientHeight;//IE 6+ in 'standards compliant mode'
-    } else if (document.body && (document.body.clientWidth || document.body.clientHeight)) {
-      myHeight = document.body.clientHeight;//IE 4 compatible
-    }
-    return myHeight;
   }
 
   // -------------------------------------------------------------------------

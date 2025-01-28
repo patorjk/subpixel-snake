@@ -1,5 +1,3 @@
-let reloadGame;
-
 const mySnakeBoard = new SNAKE.Board({
   boardContainer: "game-area",
   fullScreen: false,
@@ -20,7 +18,7 @@ const mySnakeBoard = new SNAKE.Board({
   },
   onInit: (params) => {
     params.reloadGame();
-    reloadGame = params.reloadGame;
+    window.reloadGame = params.reloadGame;
 
     document.getElementById('speed').value = params.getSpeed();
 
@@ -35,7 +33,7 @@ const mySnakeBoard = new SNAKE.Board({
     document.getElementById('message').innerHTML = '<div>You win! :D</div> <button id="playAgain">Play again</button>';
     setTimeout(() => {
       document.getElementById('playAgain').addEventListener('click', () => {
-        reloadGame();
+        window.reloadGame();
         document.getElementById('game-area').focus();
         document.getElementById('message').innerHTML = '';
       });
@@ -46,7 +44,7 @@ const mySnakeBoard = new SNAKE.Board({
     document.getElementById('message').innerHTML = '<div>You died :(</div> <button id="playAgain">Play again</button>';
     setTimeout(() => {
       document.getElementById('playAgain').addEventListener('click', () => {
-        reloadGame();
+        window.reloadGame();
         document.getElementById('game-area').focus();
         document.getElementById('message').innerHTML = '';
       });

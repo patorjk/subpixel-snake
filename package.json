@@ -2,7 +2,6 @@
   "name": "subpixel-snake",
   "version": "1.0.0",
   "description": "Subpixel Snake",
-  "main": "src/index.html",
   "scripts": {
     "start": "parcel src/index.html --open",
     "build": "parcel build src/index.html",
@@ -19,6 +18,7 @@
   },
   "homepage": "https://github.com/patorjk/subpixel-snake#readme",
   "devDependencies": {
+    "parcel": "^2.13.3",
     "parcel-bundler": "^1.6.1",
     "prettier": "3.4.2"
   }
