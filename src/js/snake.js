@@ -25,8 +25,14 @@ function getLeftPosition(col) {
 
 function getPixelColor(col) {
   if (col % 3 === 0) {
+    /*
+      I came up with this color by simply playing around. I used the microscope and tweaked the values until the red pixel was isolated on my iMax
+     */
     return 'lab(0 0 9000)';
   } else if (col % 3 === 1) {
+    /*
+      I came up with this color by simply playing around. I used the microscope and tweaked the values until the green pixel was isolated on my iMax
+     */
     return 'lab(0 -9000 0)';
   } else {
     return 'rgb(0, 0, 255)';

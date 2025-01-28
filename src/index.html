@@ -31,15 +31,6 @@
       <div id="speed-section" style="display:flex;justify-content: center;gap:0.5rem;"><label for="speed">Time between snake moves in milliseconds:</label> <input id="speed" type="number" min="50"/></div>
       <div id="options-section" style="display:none;justify-content: center;"><input type="checkbox" id="useButtons"/><label for="useButtons">Use buttons for arrow keys</label></div>
 
-      <div id="buttons" style="display:none;">
-        <div style="display:flex;justify-content:center;gap:4rem;margin-top:10rem;">
-          <button id="leftArrow" class="arrow-button">←</button>
-          <button id="rightArrow" class="arrow-button">→</button>
-          <button id="upArrow" class="arrow-button">↑</button>
-          <button id="downArrow" class="arrow-button">↓</button>
-        </div>
-      </div>
-
       <div id="dpr" style="display:flex;flex-direction:row;gap:0.25rem;justify-content:center;">Device pixel ratio: <div id="pixelRatio"></div><div id="ratioMessage" style="display:none;font-weight:bold;">(The ratio needs to be 1 for this to work, please zoom in or out)</div></div>
 
       <div style="display:flex;flex-direction:row;gap:0.25rem;align-self:center;">
@@ -65,8 +56,6 @@
     updateRatio();
     window.addEventListener('resize', updateRatio);
 
-    document.getElementById('dpr').addEventListener('click', updateRatio);
-
     // the user may try to use the arrow keys without the game focused, so if they do, focus the game board
     window.addEventListener('keyup', (evt) => {
       const theKeys = {
@@ -84,38 +73,6 @@
           document.getElementById('playAgain').click();
         }
       }
-    });
-
-    document.getElementById('useButtons').addEventListener('change', (evt) => {
-      if (evt.currentTarget.checked) {
-        document.getElementById('buttons').style.display = 'block';
-      } else {
-        document.getElementById('buttons').style.display = 'none';
-      }
-    });
-
-    document.getElementById('rightArrow').addEventListener('click', () => {
-      const evt = new CustomEvent("keybuttonpress", {detail: {key:"ArrowRight", keyCode: 39, buttonPress: true}});
-      document.getElementById('game-area').focus();
-      document.getElementById('game-area').dispatchEvent(evt);
-    });
-
-    document.getElementById('leftArrow').addEventListener('click', () => {
-      const evt = new CustomEvent("keybuttonpress", {detail: {key:"ArrowLeft", keyCode: 37, buttonPress: true}});
-      document.getElementById('game-area').focus();
-      document.getElementById('game-area').dispatchEvent(evt);
-    });
-
-    document.getElementById('upArrow').addEventListener('click', () => {
-      const evt = new CustomEvent("keybuttonpress", {detail: {key:"ArrowUp", keyCode: 38, buttonPress: true}});
-      document.getElementById('game-area').focus();
-      document.getElementById('game-area').dispatchEvent(evt);
-    });
-
-    document.getElementById('downArrow').addEventListener('click', () => {
-      const evt = new CustomEvent("keybuttonpress", {detail: {key:"ArrowDown", keyCode: 40, buttonPress: true}});
-      document.getElementById('game-area').focus();
-      document.getElementById('game-area').dispatchEvent(evt);
     });
 
   </script>
