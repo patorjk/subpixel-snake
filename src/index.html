@@ -1,81 +1,160 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <!--
+  <head>
+    <!--
   http://patorjk.com/games/subpixel-snake
 
   Source code is available here: https://github.com/patorjk/subpixel-snake
 
   -->
-  <meta charset="utf-8">
-  <title>JavaScript Snake</title>
-  <link rel=stylesheet id="style" type="text/css" href="./css/main-snake.css" />
-  <link rel="shortcut icon" href="css/images/favicon.png" />
-</head>
-<body>
-
-  <div style="display:flex;flex-direction:column;align-items:center;justify-content:center">
-    <h1>Subpixel Snake</h1>
-    <h3 style="margin-top:0;">You may need a microscope</h3>
-    <div style="width: 32px; height: 32px;">
-      <svg class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1wmkh38" focusable="false" aria-hidden="true" viewBox="0 0 24 24"><path d="m20 12-1.41-1.41L13 16.17V4h-2v12.17l-5.58-5.59L4 12l8 8z"></path></svg>
-    </div>
-    <div id="game-area" tabindex="0" style="width:500px;height:1500px;"></div>
-    <div id="message" style="margin-top:1rem;display:flex;gap:2rem;">
-    </div>
-    <div style="margin-top:1rem;display:flex;flex-direction:column;gap:2rem;">
-      <div style="margin-top:1rem;display:flex;flex-direction:row;gap:2rem;justify-content: center;">
-        <div style="display:flex;flex-direction:row;">Length: <div id="snakeLength">1</div></div>
-        <div style="display:flex;flex-direction:row;">High score: <div id="highScore">1</div></div>
+    <meta charset="utf-8" />
+    <title>JavaScript Snake</title>
+    <link
+      rel="stylesheet"
+      id="style"
+      type="text/css"
+      href="./css/main-snake.css"
+    />
+    <link rel="shortcut icon" href="css/images/favicon.png" />
+  </head>
+  <body>
+    <div
+      style="
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      "
+    >
+      <h1>Subpixel Snake</h1>
+      <h3 style="margin-top: 0">You may need a microscope</h3>
+      <div style="width: 32px; height: 32px">
+        <svg
+          class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1wmkh38"
+          focusable="false"
+          aria-hidden="true"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="m20 12-1.41-1.41L13 16.17V4h-2v12.17l-5.58-5.59L4 12l8 8z"
+          ></path>
+        </svg>
       </div>
-      <div id="speed-section" style="display:flex;justify-content: center;gap:0.5rem;"><label for="speed">Time between snake moves in milliseconds:</label> <input id="speed" type="number" min="50"/></div>
-      <div id="options-section" style="display:none;justify-content: center;"><input type="checkbox" id="useButtons"/><label for="useButtons">Use buttons for arrow keys</label></div>
+      <div
+        id="game-area"
+        tabindex="0"
+        style="width: 500px; height: 1500px"
+      ></div>
+      <div
+        id="message"
+        style="margin-top: 1rem; display: flex; gap: 2rem"
+      ></div>
+      <div
+        style="
+          margin-top: 1rem;
+          display: flex;
+          flex-direction: column;
+          gap: 2rem;
+        "
+      >
+        <div
+          style="
+            margin-top: 1rem;
+            display: flex;
+            flex-direction: row;
+            gap: 2rem;
+            justify-content: center;
+          "
+        >
+          <div style="display: flex; flex-direction: row">
+            Length:
+            <div id="snakeLength">1</div>
+          </div>
+          <div style="display: flex; flex-direction: row">
+            High score:
+            <div id="highScore">1</div>
+          </div>
+        </div>
+        <div
+          id="speed-section"
+          style="display: flex; justify-content: center; gap: 0.5rem"
+        >
+          <label for="speed">Time between snake moves in milliseconds:</label>
+          <input id="speed" type="number" min="50" />
+        </div>
+        <div
+          id="options-section"
+          style="display: none; justify-content: center"
+        >
+          <input type="checkbox" id="useButtons" /><label for="useButtons"
+            >Use buttons for arrow keys</label
+          >
+        </div>
 
-      <div id="dpr" style="display:flex;flex-direction:row;gap:0.25rem;justify-content:center;">Device pixel ratio: <div id="pixelRatio"></div><div id="ratioMessage" style="display:none;font-weight:bold;">(The ratio needs to be 1 for this to work, please zoom in or out)</div></div>
+        <div
+          id="dpr"
+          style="
+            display: flex;
+            flex-direction: row;
+            gap: 0.25rem;
+            justify-content: center;
+          "
+        >
+          Device pixel ratio:
+          <div id="pixelRatio"></div>
+          <div id="ratioMessage" style="display: none; font-weight: bold">
+            (The ratio needs to be 1 for this to work, please zoom in or out)
+          </div>
+        </div>
 
-      <div style="display:flex;flex-direction:row;gap:0.25rem;align-self:center;">
-        <a href="https://patorjk.com/">patorjk.com</a>
+        <div
+          style="
+            display: flex;
+            flex-direction: row;
+            gap: 0.25rem;
+            align-self: center;
+          "
+        >
+          <a href="https://patorjk.com/">patorjk.com</a>
+        </div>
       </div>
     </div>
-  </div>
 
-  <script type="text/javascript" src="./js/snake.js"></script>
-  <script type="text/javascript" src="./js/init.js"></script>
+    <script type="text/javascript" src="./js/snake.js"></script>
+    <script type="text/javascript" src="./js/init.js"></script>
 
-  <script>
-    const updateRatio = () => {
-      let ratio = window.devicePixelRatio;
-      document.getElementById('pixelRatio').innerHTML = ratio;
+    <script>
+      const updateRatio = () => {
+        let ratio = window.devicePixelRatio;
+        document.getElementById("pixelRatio").innerHTML = ratio;
 
-      if (ratio !== 1) {
-        document.getElementById('ratioMessage').style.display = 'block';
-      } else {
-        document.getElementById('ratioMessage').style.display = 'none';
-      }
-    }
-    updateRatio();
-    window.addEventListener('resize', updateRatio);
-
-    // the user may try to use the arrow keys without the game focused, so if they do, focus the game board
-    window.addEventListener('keyup', (evt) => {
-      const theKeys = {
-        "ArrowLeft"  : true,
-        "ArrowRight" : true,
-        "ArrowUp"    : true,
-        "ArrowDown"  : true,
-      }
-      if (theKeys[evt.key]) {
-        document.getElementById('game-area').focus();
-      }
-
-      if (evt.key === '0') {
-        if (document.getElementById('playAgain')) {
-          document.getElementById('playAgain').click();
+        if (ratio !== 1) {
+          document.getElementById("ratioMessage").style.display = "block";
+        } else {
+          document.getElementById("ratioMessage").style.display = "none";
         }
-      }
-    });
+      };
+      updateRatio();
+      window.addEventListener("resize", updateRatio);
 
-  </script>
+      // the user may try to use the arrow keys without the game focused, so if they do, focus the game board
+      window.addEventListener("keyup", (evt) => {
+        const theKeys = {
+          ArrowLeft: true,
+          ArrowRight: true,
+          ArrowUp: true,
+          ArrowDown: true,
+        };
+        if (theKeys[evt.key]) {
+          document.getElementById("game-area").focus();
+        }
 
-</body>
+        if (evt.key === "0") {
+          if (document.getElementById("playAgain")) {
+            document.getElementById("playAgain").click();
+          }
+        }
+      });
+    </script>
+  </body>
 </html>

@@ -6,6 +6,40 @@ const mySnakeBoard = new SNAKE.Board({
   rows: 7,
   startRow: 2,
   startCol: 2,
+  moveSnakeWithAI: ({
+                      grid,
+                      snakeHead,
+                      currentDirection,
+                      isFirstGameMove,
+                      setDirection,
+                    }) => {
+
+    /*
+    Direction:
+                0
+              3   1
+                2
+     */
+
+    // This is NOT a real hamiltonian cycle. It misses some values, I'm just including this here as an example of
+    // a look-up type table that you could do.
+    const hamiltonianCycleGrid = [
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 0],
+      [0, 0, 2, 3, 3, 2, 3, 2, 3, 2, 3, 2, 3, 2, 0],
+      [0, 0, 2, 0, 0, 3, 0, 2, 0, 2, 0, 2, 0, 2, 0],
+      [0, 0, 2, 0, 2, 2, 0, 2, 0, 2, 0, 2, 0, 2, 0],
+      [0, 0, 3, 0, 3, 3, 3, 3, 0, 3, 0, 3, 0, 3, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    ]
+
+    console.log(JSON.parse(JSON.stringify(grid)))
+    console.log(snakeHead, currentDirection)
+
+    const newDirection = hamiltonianCycleGrid[snakeHead.row][snakeHead.col];
+    console.log(newDirection);
+    setDirection(newDirection);
+  },
   onLengthUpdate: (length) => {
     document.getElementById("snakeLength").innerHTML = `${length}`;
   },
@@ -29,8 +63,10 @@ const mySnakeBoard = new SNAKE.Board({
     });
     document.getElementById("highScore").innerHTML =
       localStorage.getItem(HIGH_SCORE_KEY) || 0;
+
+    params.startAIGame();
   },
-  onWin: () => {
+  onWin: (params) => {
     document.getElementById("message").innerHTML =
       '<div>You win! :D</div> <button id="playAgain">Play again</button>';
     setTimeout(() => {
@@ -38,12 +74,13 @@ const mySnakeBoard = new SNAKE.Board({
         window.reloadGame();
         document.getElementById("game-area").focus();
         document.getElementById("message").innerHTML = "";
+        params.startAIGame();
       });
       document.getElementById("highScore").innerHTML =
         localStorage.getItem(HIGH_SCORE_KEY) || 0;
     }, 100);
   },
-  onDeath: () => {
+  onDeath: (params) => {
     document.getElementById("message").innerHTML =
       '<div>You died :(</div> <button id="playAgain">Play again</button>';
     setTimeout(() => {
@@ -51,6 +88,7 @@ const mySnakeBoard = new SNAKE.Board({
         window.reloadGame();
         document.getElementById("game-area").focus();
         document.getElementById("message").innerHTML = "";
+        params.startAIGame();
       });
       document.getElementById("playAgain").focus();
       document.getElementById("highScore").innerHTML =
