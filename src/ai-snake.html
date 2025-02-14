@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <!--
+http://patorjk.com/games/subpixel-snake
+
+Source code is available here: https://github.com/patorjk/subpixel-snake
+
+-->
+  <meta charset="utf-8"/>
+  <title>JavaScript Snake</title>
+  <link
+    href="./css/main-snake.css"
+    id="style"
+    rel="stylesheet"
+    type="text/css"
+  />
+  <link href="css/images/favicon.png" rel="shortcut icon"/>
+</head>
+<body>
+<div
+  style="
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      "
+>
+  <h1>AI Subpixel Snake</h1>
+  <h3 style="margin-top: 0">You may need a microscope</h3>
+  <div style="width: 32px; height: 32px">
+    <svg
+      aria-hidden="true"
+      class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1wmkh38"
+      focusable="false"
+      viewBox="0 0 24 24"
+    >
+      <path
+        d="m20 12-1.41-1.41L13 16.17V4h-2v12.17l-5.58-5.59L4 12l8 8z"
+      ></path>
+    </svg>
+  </div>
+  <div
+    id="game-area"
+    style="width: 500px; height: 1500px"
+    tabindex="0"
+  ></div>
+  <div
+    id="message"
+    style="margin-top: 1rem; display: flex; gap: 2rem"
+  ></div>
+  <div
+    style="
+          margin-top: 1rem;
+          display: flex;
+          flex-direction: column;
+          gap: 2rem;
+        "
+  >
+    <div
+      style="
+            margin-top: 1rem;
+            display: flex;
+            flex-direction: row;
+            gap: 2rem;
+            justify-content: center;
+          "
+    >
+      <div style="display: flex; flex-direction: row">
+        Length:
+        <div id="snakeLength">1</div>
+      </div>
+      <div style="display: flex; flex-direction: row">
+        High score:
+        <div id="highScore">1</div>
+      </div>
+    </div>
+    <div
+      id="speed-section"
+      style="display: flex; justify-content: center; gap: 0.5rem"
+    >
+      <label for="speed">Time between snake moves in milliseconds:</label>
+      <input id="speed" min="50" type="number"/>
+    </div>
+    <div
+      id="options-section"
+      style="display: none; justify-content: center"
+    >
+      <input id="useButtons" type="checkbox"/><label for="useButtons"
+    >Use buttons for arrow keys</label
+    >
+    </div>
+
+    <div
+      id="dpr"
+      style="
+            display: flex;
+            flex-direction: row;
+            gap: 0.25rem;
+            justify-content: center;
+          "
+    >
+      Device pixel ratio:
+      <div id="pixelRatio"></div>
+      <div id="ratioMessage" style="display: none; font-weight: bold">
+        (The ratio needs to be 1 for this to work, please zoom in or out)
+      </div>
+    </div>
+
+    <div
+      style="
+            display: flex;
+            flex-direction: row;
+            gap: 0.25rem;
+            align-self: center;
+          "
+    >
+      <strong
+      >This is just a demo page that shows how the snake game can play
+        itself</strong
+      >
+    </div>
+
+    <div
+      style="
+            display: flex;
+            flex-direction: row;
+            gap: 0.25rem;
+            align-self: center;
+          "
+    >
+      <a href="https://patorjk.com/">patorjk.com</a>
+    </div>
+  </div>
+</div>
+
+<script src="./js/snake.js" type="text/javascript"></script>
+<script src="./js/ai-init.js" type="text/javascript"></script>
+
+<script>
+  const updateRatio = () => {
+    let ratio = window.devicePixelRatio;
+    document.getElementById("pixelRatio").innerHTML = ratio;
+
+    if (ratio !== 1) {
+      document.getElementById("ratioMessage").style.display = "block";
+    } else {
+      document.getElementById("ratioMessage").style.display = "none";
+    }
+  };
+  updateRatio();
+  window.addEventListener("resize", updateRatio);
+
+  // the user may try to use the arrow keys without the game focused, so if they do, focus the game board
+  window.addEventListener("keyup", (evt) => {
+    const theKeys = {
+      ArrowLeft: true,
+      ArrowRight: true,
+      ArrowUp: true,
+      ArrowDown: true,
+    };
+    if (theKeys[evt.key]) {
+      document.getElementById("game-area").focus();
+    }
+
+    if (evt.key === "0") {
+      if (document.getElementById("playAgain")) {
+        document.getElementById("playAgain").click();
+      }
+    }
+  });
+</script>
+</body>
+</html>
