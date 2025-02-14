@@ -93,7 +93,6 @@ SNAKE.Snake =
     // Private static variables and methods
     // -------------------------------------------------------------------------
 
-    let instanceNumber = 0;
     const blockPool = [];
 
     const SnakeBlock = function () {
@@ -321,6 +320,13 @@ SNAKE.Snake =
           newHead = me.snakeTail,
           grid = playingBoard.grid; // cache grid for quicker lookup
 
+        if (isPaused === true) {
+          setTimeout(function () {
+            me.go();
+          }, snakeSpeed);
+          return;
+        }
+
         // code to execute if snake is being moved by AI
         if (config.moveSnakeWithAI) {
           config.moveSnakeWithAI({
@@ -330,13 +336,6 @@ SNAKE.Snake =
             isFirstGameMove,
             setDirection: me.setDirection,
           });
-        }
-
-        if (isPaused === true) {
-          setTimeout(function () {
-            me.go();
-          }, snakeSpeed);
-          return;
         }
 
         me.snakeTail = newHead.prev;
@@ -1017,8 +1016,8 @@ SNAKE.Board =
        * @method handleDeath
        */
       me.handleDeath = function () {
-        config.onDeath({startAIGame: me.startAIGame});
         handleEndCondition();
+        config.onDeath({startAIGame: me.startAIGame});
       };
 
       /**
@@ -1026,8 +1025,8 @@ SNAKE.Board =
        * @method handleWin
        */
       me.handleWin = function () {
-        config.onWin({startAIGame: me.startAIGame});
         handleEndCondition();
+        config.onWin({startAIGame: me.startAIGame});
       };
 
       me.setSpeed = (speed) => {
@@ -1037,7 +1036,8 @@ SNAKE.Board =
         return mySnake.getSpeed();
       };
 
-      me.startAIGame = (direction) => {
+      me.startAIGame = () => {
+        me.resetBoard();
         mySnake.rebirth();
         me.setBoardState(2); // start the game!
         mySnake.go();

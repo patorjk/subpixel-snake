@@ -1,3 +1,8 @@
+/**
+ * This is an example of how to use the game with AI
+ * used in ai-snake.html
+ */
+
 const mySnakeBoard = new SNAKE.Board({
   boardContainer: "game-area",
   fullScreen: false,
