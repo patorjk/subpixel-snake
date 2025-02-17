@@ -8,7 +8,7 @@ Source code is available here: https://github.com/patorjk/subpixel-snake
 
 -->
   <meta charset="utf-8"/>
-  <title>JavaScript Snake</title>
+  <title>Subpixel Snake: AI Controlled</title>
   <link
     href="./css/main-snake.css"
     id="style"
@@ -83,6 +83,13 @@ Source code is available here: https://github.com/patorjk/subpixel-snake
       <input id="speed" min="50" type="number"/>
     </div>
     <div
+      id="zoom-section"
+      style="display: flex; justify-content: center; gap: 0.5rem"
+    >
+      <label for="snake-zoom">Percent to zoom page:</label>
+      <input id="snake-zoom" min="1" type="number" value="100"/>
+    </div>
+    <div
       id="options-section"
       style="display: none; justify-content: center"
     >
@@ -104,6 +111,28 @@ Source code is available here: https://github.com/patorjk/subpixel-snake
       <div id="pixelRatio"></div>
       <div id="ratioMessage" style="display: none; font-weight: bold">
         (The ratio needs to be 1 for this to work, please zoom in or out)
+      </div>
+    </div>
+
+    <div style="
+            display: flex;
+            flex-direction: row;
+            gap: 0.25rem;
+            justify-content: center;
+          ">
+      <div>
+        <input checked id="ai-route1" name="ai-route" type="radio" value="0"/>
+        <label for="ai-route1">Route 1</label>
+      </div>
+
+      <div>
+        <input id="ai-route2" name="ai-route" type="radio" value="1"/>
+        <label for="ai-route2">Route 2</label>
+      </div>
+
+      <div>
+        <input id="ai-route3" name="ai-route" type="radio" value="2"/>
+        <label for="ai-route3">Route 3</label>
       </div>
     </div>
 
@@ -170,5 +199,6 @@ Source code is available here: https://github.com/patorjk/subpixel-snake
     }
   });
 </script>
+<script src="./js/general.js"></script>
 </body>
 </html>

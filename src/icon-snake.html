@@ -8,7 +8,7 @@ Source code is available here: https://github.com/patorjk/subpixel-snake
 
 -->
   <meta charset="utf-8"/>
-  <title>Subpixel Snake: The Web's Smallest Game</title>
+  <title>Subpixel Snake: Snake Hidden in Icon</title>
   <link
     href="./css/main-snake.css"
     id="style"
@@ -26,9 +26,9 @@ Source code is available here: https://github.com/patorjk/subpixel-snake
         justify-content: center;
       "
 >
-  <h1>Subpixel Snake</h1>
+  <h1>AI Subpixel Snake</h1>
   <h3 style="margin-top: 0">You may need a microscope</h3>
-  <div style="width: 32px; height: 32px">
+  <div style="width: 32px; height: 32px; margin-bottom:16px;">
     <svg
       aria-hidden="true"
       class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-1wmkh38"
@@ -40,11 +40,14 @@ Source code is available here: https://github.com/patorjk/subpixel-snake
       ></path>
     </svg>
   </div>
-  <div
-    id="game-area"
-    style="width: 500px; height: 1500px"
-    tabindex="0"
-  ></div>
+  <div style="position:relative;">
+    <div id="snake-icon" style="position:absolute;left:-30px;top:-6px;"><img src="./css/images/snake-icon.png"/></div>
+    <div
+      id="game-area"
+      style="width: 500px; height: 1500px"
+      tabindex="0"
+    ></div>
+  </div>
   <div
     id="message"
     style="margin-top: 1rem; display: flex; gap: 2rem"
@@ -114,6 +117,42 @@ Source code is available here: https://github.com/patorjk/subpixel-snake
       </div>
     </div>
 
+    <div style="
+            display: flex;
+            flex-direction: row;
+            gap: 0.25rem;
+            justify-content: center;
+          ">
+      <div>
+        <input checked id="ai-route1" name="ai-route" type="radio" value="0"/>
+        <label for="ai-route1">Route 1</label>
+      </div>
+
+      <div>
+        <input id="ai-route2" name="ai-route" type="radio" value="1"/>
+        <label for="ai-route2">Route 2</label>
+      </div>
+
+      <div>
+        <input id="ai-route3" name="ai-route" type="radio" value="2"/>
+        <label for="ai-route3">Route 3</label>
+      </div>
+    </div>
+
+    <div
+      style="
+            display: flex;
+            flex-direction: row;
+            gap: 0.25rem;
+            align-self: center;
+          "
+    >
+      <strong
+      >This is just a demo page that shows how the snake game can play
+        itself</strong
+      >
+    </div>
+
     <div
       style="
             display: flex;
@@ -128,7 +167,7 @@ Source code is available here: https://github.com/patorjk/subpixel-snake
 </div>
 
 <script src="./js/snake.js" type="text/javascript"></script>
-<script src="./js/init.js" type="text/javascript"></script>
+<script src="./js/ai-init.js" type="text/javascript"></script>
 
 <script>
   const updateRatio = () => {
