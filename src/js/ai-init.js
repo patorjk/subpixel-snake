@@ -26,9 +26,12 @@ const mySnakeBoard = new SNAKE.Board({
                 2
      */
 
+    const route = parseInt(document.querySelector('input[name="ai-route"]:checked').value, 10);
+
     // This is NOT a real hamiltonian cycle. It misses some values, I'm just including this here as an example of
     // a look-up type table that you could do.
-    const hamiltonianCycleGrid = [
+    const grids = [[], [], []];
+    grids[0] = [
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 0],
       [0, 0, 2, 3, 3, 2, 3, 2, 3, 2, 3, 2, 3, 2, 0],
@@ -36,13 +39,32 @@ const mySnakeBoard = new SNAKE.Board({
       [0, 0, 2, 0, 2, 2, 0, 2, 0, 2, 0, 2, 0, 2, 0],
       [0, 0, 3, 0, 3, 3, 3, 3, 0, 3, 0, 3, 0, 3, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-    ]
+    ];
+    grids[1] = [
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 0],
+      [0, 1, 0, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 0],
+      [0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 0],
+      [0, 0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 0],
+      [0, 0, 3, 0, 3, 3, 3, 3, 0, 3, 0, 3, 0, 3, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    ];
+    grids[2] = [
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 0],
+      [0, 0, 2, 3, 3, 3, 3, 3, 3, 3, 3, 2, 3, 2, 0],
+      [0, 0, 2, 1, 1, 1, 1, 1, 1, 1, 0, 2, 0, 2, 0],
+      [0, 0, 2, 0, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 0],
+      [0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    ];
 
-    console.log(JSON.parse(JSON.stringify(grid)))
-    console.log(snakeHead, currentDirection)
+    //console.log(JSON.parse(JSON.stringify(grid)))
+    //console.log(snakeHead, currentDirection)
+
+    const hamiltonianCycleGrid = grids[route];
 
     const newDirection = hamiltonianCycleGrid[snakeHead.row][snakeHead.col];
-    console.log(newDirection);
     setDirection(newDirection);
   },
   onLengthUpdate: (length) => {
