@@ -3,34 +3,43 @@
  * used in ai-snake.html
  */
 
-const mySnakeBoard = new SNAKE.Board({
-  boardContainer: "game-area",
-  fullScreen: false,
-  premoveOnPause: false,
-  columns: 15,
-  rows: 7,
-  startRow: 2,
-  startCol: 2,
-  moveSnakeWithAI: ({
-                      grid,
-                      snakeHead,
-                      currentDirection,
-                      isFirstGameMove,
-                      setDirection,
-                    }) => {
+const urlParams = new URLSearchParams(window.location.search);
+const horizontal = urlParams.get('horizontal');
+const isHorizontal = horizontal === 'true' || horizontal === true;
 
-    /*
+const getGrid = () => {
+  const grids = [[], [], []];
+
+  /*
     Direction:
-                0
-              3   1
-                2
-     */
+            0
+          3   1
+            2
+ */
 
-    const route = parseInt(document.querySelector('input[name="ai-route"]:checked').value, 10);
-
-    // This is NOT a real hamiltonian cycle. It misses some values, I'm just including this here as an example of
-    // a look-up type table that you could do.
-    const grids = [[], [], []];
+  if (isHorizontal) {
+    grids[0] = [
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 2, 3, 3, 3, 3, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 3, 3, 3, 3, 3, 3, 0],
+      [0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    ];
+    grids[1] = [
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 0],
+      [0, 2, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0],
+      [0, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    ];
+    grids[2] = [
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 2, 3, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 0],
+      [0, 2, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+      [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    ];
+  } else {
     grids[0] = [
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
       [0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 0],
@@ -58,6 +67,31 @@ const mySnakeBoard = new SNAKE.Board({
       [0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0],
       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     ];
+  }
+  return grids;
+}
+
+const mySnakeBoard = new SNAKE.Board({
+  boardContainer: "game-area",
+  fullScreen: false,
+  premoveOnPause: false,
+  columns: isHorizontal ? 15 + 12 : 15,
+  rows: isHorizontal ? 5 : 7,
+  startRow: 2,
+  startCol: 2,
+  moveSnakeWithAI: ({
+                      grid,
+                      snakeHead,
+                      currentDirection,
+                      isFirstGameMove,
+                      setDirection,
+                    }) => {
+
+    const route = parseInt(document.querySelector('input[name="ai-route"]:checked').value, 10);
+
+    // This is NOT a real hamiltonian cycle. It misses some values, I'm just including this here as an example of
+    // a look-up type table that you could do.
+    const grids = getGrid();
 
     //console.log(JSON.parse(JSON.stringify(grid)))
     //console.log(snakeHead, currentDirection)
