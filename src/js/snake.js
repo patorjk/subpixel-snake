@@ -373,13 +373,13 @@ SNAKE.Snake =
 
         // check the new spot the snake moved into
 
-        if (grid[newHead.row][newHead.col] === 0) {
+        if (newHead.row === -1 || newHead.col === -1 || newHead.row >= grid.length || newHead.col >= grid[newHead.row].length || grid[newHead.row][newHead.col] > 0) {
+          me.handleDeath();
+        } else if (grid[newHead.row][newHead.col] === 0) {
           grid[newHead.row][newHead.col] = 1;
           setTimeout(function () {
             me.go();
           }, snakeSpeed);
-        } else if (grid[newHead.row][newHead.col] > 0) {
-          me.handleDeath();
         } else if (
           grid[newHead.row][newHead.col] === playingBoard.getGridFoodValue()
         ) {
@@ -881,16 +881,7 @@ SNAKE.Board =
         for (let row = 0; row < numBoardRows; row++) {
           me.grid[row] = [];
           for (let col = 0; col < numBoardCols; col++) {
-            if (
-              col === 0 ||
-              row === 0 ||
-              col === numBoardCols - 1 ||
-              row === numBoardRows - 1
-            ) {
-              me.grid[row][col] = 1; // an edge
-            } else {
-              me.grid[row][col] = 0; // empty space
-            }
+            me.grid[row][col] = 0; // empty space
           }
         }
         me.grid[getStartRow()][getStartCol()] = 1; // snake head
