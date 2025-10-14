@@ -25,18 +25,39 @@ function getLeftPosition(col) {
 }
 
 function getPixelColor(col) {
+  let labColor = document.getElementById('lab-color').checked;
+  let srgbColor = document.getElementById('srgb-color').checked;
+  let sbgrColor = document.getElementById('sbgr-color').checked;
+
   if (col % 3 === 0) {
-    /*
-      I came up with this color by simply playing around. I used the microscope and tweaked the values until the red pixel was isolated on my iMax
-     */
-    return "lab(0 0 9000)";
+    if (labColor) {
+      /*
+        I came up with this color by simply playing around. I used the microscope and tweaked the values until the red pixel was isolated on my iMax
+       */
+      return "lab(0 0 9000)";
+    } else if (sbgrColor) {
+      return '#0000FF'; // Red becomes blue
+    } else {
+      return '#FF0000';
+    }
   } else if (col % 3 === 1) {
-    /*
-      I came up with this color by simply playing around. I used the microscope and tweaked the values until the green pixel was isolated on my iMax
-     */
-    return "lab(0 -9000 0)";
+    if (labColor) {
+      /*
+        I came up with this color by simply playing around. I used the microscope and tweaked the values until the green pixel was isolated on my iMax
+       */
+      return "lab(0 -9000 0)";
+    } else {
+      return '#00FF00';
+    }
   } else {
-    return "rgb(0, 0, 255)";
+    if (labColor) {
+      // again, this value isolates the blue subpixel on my imac
+      return "lab(0 9000 -9000)";
+    } else if (sbgrColor) {
+      return '#FF0000'; // blue becomes red
+    } else {
+      return '#0000FF';
+    }
   }
 }
 
@@ -603,16 +624,16 @@ SNAKE.Food =
           playingBoard.grid[fRow][fColumn] = 0;
         }
 
-        let row = 0,
-          col = 0,
-          numTries = 0;
-
         const maxRows = playingBoard.grid.length - 1;
         const maxCols = playingBoard.grid[0].length - 1;
 
+        let row = getRandomPosition(0, maxRows),
+          col = getRandomPosition(0, maxCols),
+          numTries = 0;
+
         while (playingBoard.grid[row][col] !== 0) {
-          row = getRandomPosition(1, maxRows);
-          col = getRandomPosition(1, maxCols);
+          row = getRandomPosition(0, maxRows);
+          col = getRandomPosition(0, maxCols);
 
           // in some cases there may not be any room to put food anywhere
           // instead of freezing, exit out (and return false to indicate
