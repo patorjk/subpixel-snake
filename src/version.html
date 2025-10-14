@@ -1,0 +1,115 @@
+<html>
+<head>
+  <title>Version Checker</title>
+</head>
+<body>
+<script>
+  /**
+   * Detects the browser name and version, compatible with old browsers including IE6
+   * @returns {Object} Object containing browser name and version
+   */
+  function detectBrowser() {
+    var userAgent = navigator.userAgent;
+    var browserName = "Unknown";
+    var fullVersion = "Unknown";
+    var nameOffset, verOffset, ix;
+
+    // In Opera, the true version is after "Opera" or after "Version"
+    if ((verOffset = userAgent.indexOf("Opera")) !== -1) {
+      browserName = "Opera";
+      fullVersion = userAgent.substring(verOffset + 6);
+      if ((verOffset = userAgent.indexOf("Version")) !== -1) {
+        fullVersion = userAgent.substring(verOffset + 8);
+      }
+    }
+    // In MSIE, the true version is after "MSIE" in userAgent
+    else if ((verOffset = userAgent.indexOf("MSIE")) !== -1) {
+      browserName = "Microsoft Internet Explorer";
+      fullVersion = userAgent.substring(verOffset + 5);
+    }
+    // In Chrome, the true version is after "Chrome"
+    else if ((verOffset = userAgent.indexOf("Chrome")) !== -1) {
+      browserName = "Chrome";
+      fullVersion = userAgent.substring(verOffset + 7);
+    }
+    // In Safari, the true version is after "Safari" or after "Version"
+    else if ((verOffset = userAgent.indexOf("Safari")) !== -1) {
+      browserName = "Safari";
+      fullVersion = userAgent.substring(verOffset + 7);
+      if ((verOffset = userAgent.indexOf("Version")) !== -1) {
+        fullVersion = userAgent.substring(verOffset + 8);
+      }
+    }
+    // In Firefox, the true version is after "Firefox"
+    else if ((verOffset = userAgent.indexOf("Firefox")) !== -1) {
+      browserName = "Firefox";
+      fullVersion = userAgent.substring(verOffset + 8);
+    }
+    // In Netscape, the true version is after "Netscape/" (or after "Mozilla/")
+    else if ((nameOffset = userAgent.lastIndexOf(' ') + 1) < (verOffset = userAgent.lastIndexOf('/'))) {
+      browserName = userAgent.substring(nameOffset, verOffset);
+      fullVersion = userAgent.substring(verOffset + 1);
+      if (browserName.toLowerCase() === browserName.toUpperCase()) {
+        browserName = navigator.appName;
+      }
+    }
+
+    // For other browsers where direct version detection doesn't work
+    if (browserName === "Unknown") {
+      if (navigator.appName === "Microsoft Internet Explorer" ||
+        (navigator.appName === "Netscape" &&
+          userAgent.indexOf("Trident/") !== -1)) {
+        browserName = "Microsoft Internet Explorer";
+
+        // Detect IE 11 and above
+        if (userAgent.indexOf("rv:") !== -1) {
+          fullVersion = userAgent.substring(userAgent.indexOf("rv:") + 3);
+        }
+      } else {
+        browserName = navigator.appName;
+      }
+    }
+
+    // trim the fullVersion string at semicolon/space if present
+    if ((ix = fullVersion.indexOf(";")) !== -1) {
+      fullVersion = fullVersion.substring(0, ix);
+    }
+    if ((ix = fullVersion.indexOf(" ")) !== -1) {
+      fullVersion = fullVersion.substring(0, ix);
+    }
+
+    var majorVersion = parseInt('' + fullVersion, 10);
+    if (isNaN(majorVersion)) {
+      fullVersion = '' + parseFloat(navigator.appVersion);
+      majorVersion = parseInt(navigator.appVersion, 10);
+    }
+
+    return {
+      name: browserName,
+      version: fullVersion,
+      majorVersion: majorVersion,
+      userAgent: userAgent
+    };
+  }
+
+  // Example usage:
+  function displayBrowserInfo() {
+    var browser = detectBrowser();
+    var infoDiv = document.createElement("div");
+    infoDiv.innerHTML = "Browser: " + browser.name + "<br>" +
+      "Version: " + browser.version + "<br>" +
+      "Major Version: " + browser.majorVersion + "<br>" +
+      "User Agent: " + browser.userAgent;
+    document.body.appendChild(infoDiv);
+  }
+
+  // Call this function when the page loads
+  if (window.addEventListener) {
+    window.addEventListener("load", displayBrowserInfo, false);
+  } else if (window.attachEvent) {
+    // For IE8 and earlier versions
+    window.attachEvent("onload", displayBrowserInfo);
+  }
+</script>
+</body>
+</html>

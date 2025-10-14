@@ -42,7 +42,7 @@ Source code is available here: https://github.com/patorjk/subpixel-snake
   </div>
   <div
     id="game-area"
-    style="width: 500px; height: 1500px"
+    style="width: 500px; height: 1500px;margin-right:20px;margin-left:20px;"
     tabindex="0"
   ></div>
   <div
@@ -136,6 +136,41 @@ Source code is available here: https://github.com/patorjk/subpixel-snake
       </div>
     </div>
 
+    <div style="
+            display: flex;
+            flex-direction: row;
+            gap: 0.25rem;
+            justify-content: center;
+          ">
+      <div>
+        <input id="lab-color" name="color-type" type="radio" value="0"/>
+        <label for="lab-color">LAB Color</label>
+      </div>
+
+      <div>
+        <input checked id="srgb-color" name="color-type" type="radio" value="1"/>
+        <label for="srgb-color">sRGB Color</label>
+      </div>
+
+      <div>
+        <input id="sbgr-color" name="color-type" type="radio" value="2"/>
+        <label for="sbgr-color">sBGR Color</label>
+      </div>
+    </div>
+
+    <div style="
+            display: flex;
+            flex-direction: row;
+            gap: 0.25rem;
+            justify-content: center;
+          ">
+      <button id="refreshBtn">Refresh</button>
+      <button id="horizontalBtn">Horizontal</button>
+      <button id="verticalBtn">Vertical</button>
+      <button id="horizontalOldDeviceBtn">Horizontal - Old Device</button>
+      <button id="verticalOldDeviceBtn">Vertical - Old Device</button>
+    </div>
+
     <div
       style="
             display: flex;
@@ -167,8 +202,20 @@ Source code is available here: https://github.com/patorjk/subpixel-snake
 <script src="./js/ai-init.js" type="text/javascript"></script>
 
 <script>
-  const updateRatio = () => {
-    let ratio = window.devicePixelRatio;
+  var MyAddEventListener = (function () {
+    if (window.addEventListener) {
+      return function (obj, event, funct, evtCapturing) {
+        obj.addEventListener(event, funct, evtCapturing);
+      };
+    } else if (window.attachEvent) {
+      return function (obj, event, funct) {
+        obj.attachEvent("on" + event, funct);
+      };
+    }
+  })();
+
+  var updateRatio = function () {
+    var ratio = window.devicePixelRatio;
     document.getElementById("pixelRatio").innerHTML = ratio;
 
     if (ratio !== 1) {
@@ -178,15 +225,15 @@ Source code is available here: https://github.com/patorjk/subpixel-snake
     }
   };
   updateRatio();
-  window.addEventListener("resize", updateRatio);
+  MyAddEventListener(window, "resize", updateRatio);
 
   // the user may try to use the arrow keys without the game focused, so if they do, focus the game board
-  window.addEventListener("keyup", (evt) => {
-    const theKeys = {
+  MyAddEventListener(window, "keyup", function (evt) {
+    var theKeys = {
       ArrowLeft: true,
       ArrowRight: true,
       ArrowUp: true,
-      ArrowDown: true,
+      ArrowDown: true
     };
     if (theKeys[evt.key]) {
       document.getElementById("game-area").focus();
@@ -199,6 +246,6 @@ Source code is available here: https://github.com/patorjk/subpixel-snake
     }
   });
 </script>
-<script src="./js/general.js"></script>
+<script src="./js/general.js?1"></script>
 </body>
 </html>

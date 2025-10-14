@@ -1,11 +1,23 @@
-document.getElementById('snake-zoom').addEventListener('change', (evt) => {
-  const newPercent = `${evt.target.value}%`;
+var MyAddEventListener = (function () {
+  if (window.addEventListener) {
+    return function (obj, event, funct, evtCapturing) {
+      obj.addEventListener(event, funct, evtCapturing);
+    };
+  } else if (window.attachEvent) {
+    return function (obj, event, funct) {
+      obj.attachEvent("on" + event, funct);
+    };
+  }
+})();
+
+MyAddEventListener(document.getElementById('snake-zoom'), 'change', function (evt) {
+  var newPercent = evt.target.value + '%';
   document.body.style.zoom = newPercent;
 });
 
-document.addEventListener('keydown', (evt) => {
-  const setRoute = (id) => {
-    const elm = document.getElementById(id);
+MyAddEventListener(document, 'keydown', function (evt) {
+  var setRoute = function (id) {
+    var elm = document.getElementById(id);
     if (elm) {
       elm.checked = true;
     }
@@ -19,3 +31,42 @@ document.addEventListener('keydown', (evt) => {
     setRoute('ai-route3');
   }
 });
+
+var refreshButton = document.getElementById("refreshBtn");
+if (refreshButton) {
+  MyAddEventListener(refreshButton, "click", function (evt) {
+    window.location.reload();
+  });
+}
+
+var horizontalButton = document.getElementById("horizontalBtn");
+if (horizontalButton) {
+  MyAddEventListener(horizontalButton, "click", function (evt) {
+    var rootUrl = window.location.toString().split('?')[0];
+    window.location = rootUrl + '?horizontal=true';
+  });
+}
+
+var verticalButton = document.getElementById("verticalBtn");
+if (verticalButton) {
+  MyAddEventListener(verticalButton, "click", function (evt) {
+    var rootUrl = window.location.toString().split('?')[0];
+    window.location = rootUrl;
+  });
+}
+
+var horizontalOldDeviceButton = document.getElementById("horizontalOldDeviceBtn");
+if (horizontalOldDeviceButton) {
+  MyAddEventListener(horizontalOldDeviceButton, "click", function (evt) {
+    var rootUrl = window.location.toString().split('?')[0];
+    window.location = rootUrl + '?horizontal=true&oldDevice=true';
+  });
+}
+
+var verticalOldDeviceButton = document.getElementById("verticalOldDeviceBtn");
+if (verticalOldDeviceButton) {
+  MyAddEventListener(verticalOldDeviceButton, "click", function (evt) {
+    var rootUrl = window.location.toString().split('?')[0];
+    window.location = rootUrl + '?oldDevice=true';
+  });
+}

@@ -9,7 +9,7 @@ http://patorjk.com/games/snake
  * @class SNAKE
  */
 
-const HIGH_SCORE_KEY = "jsSubpixelSnakeHighScore";
+var HIGH_SCORE_KEY = "jsSubpixelSnakeHighScore";
 
 // this will allow us to access the game in other JS files when the app is loaded up in a codesandbox.com sandbox, that's the only reason it's here
 if (!window.SNAKE) {
@@ -25,19 +25,77 @@ function getLeftPosition(col) {
 }
 
 function getPixelColor(col) {
+  var labColor = document.getElementById('lab-color').checked;
+  var srgbColor = document.getElementById('srgb-color').checked;
+  var sbgrColor = document.getElementById('sbgr-color').checked;
+
   if (col % 3 === 0) {
-    /*
-      I came up with this color by simply playing around. I used the microscope and tweaked the values until the red pixel was isolated on my iMax
-     */
-    return "lab(0 0 9000)";
+    if (labColor) {
+      /*
+        I came up with this color by simply playing around. I used the microscope and tweaked the values until the red pixel was isolated on my iMax
+       */
+      return "lab(0 0 9000)";
+    } else if (sbgrColor) {
+      return '#0000FF'; // Red becomes blue
+    } else {
+      return '#FF0000';
+    }
   } else if (col % 3 === 1) {
-    /*
-      I came up with this color by simply playing around. I used the microscope and tweaked the values until the green pixel was isolated on my iMax
-     */
-    return "lab(0 -9000 0)";
+    if (labColor) {
+      /*
+        I came up with this color by simply playing around. I used the microscope and tweaked the values until the green pixel was isolated on my iMax
+       */
+      return "lab(0 -9000 0)";
+    } else {
+      return '#00FF00';
+    }
   } else {
-    return "rgb(0, 0, 255)";
+    if (labColor) {
+      // again, this value isolates the blue subpixel on my imac
+      return "lab(0 9000 -9000)";
+    } else if (sbgrColor) {
+      return '#FF0000'; // blue becomes red
+    } else {
+      return '#0000FF';
+    }
   }
+}
+
+/**
+ * Similar to getPixelColor but this is for older devices where we don't have "mixed-blend-mode" so we need to
+ * calculate the color of the pixel based on the overlapping blocks (this method is called with an rgbElm that
+ * that can represent more than 1 block).
+ *
+ * @param rgbElm Object with r, g, and b number props
+ * @param col column number
+ */
+function adjustColor(rgbElm, col) {
+  var sbgrColor = document.getElementById('sbgr-color').checked;
+  if (col % 3 === 0) {
+    if (sbgrColor) {
+      rgbElm.b = 255;
+    } else {
+      rgbElm.r = 255;
+    }
+  } else if (col % 3 === 1) {
+    rgbElm.g = 255;
+  } else {
+    if (sbgrColor) {
+      rgbElm.r = 255;
+    } else {
+      rgbElm.b = 255;
+    }
+  }
+}
+
+function getColorFromRGB(rgbElm) {
+  var r = rgbElm.r.toString(16);
+  var g = rgbElm.g.toString(16);
+  var b = rgbElm.b.toString(16);
+  if (r.length === 1) r = '0' + r;
+  if (g.length === 1) g = '0' + g;
+  if (b.length === 1) b = '0' + b;
+  return '#' + r + g + b;
 }
 
 /**
@@ -58,6 +116,12 @@ SNAKE.addEventListener = (function () {
     };
   }
 })();
+
+if (!window.localStorage) {
+  window.localStorage = {};
+  window.localStorage.setItem = function () {
+  };
+}
 
 /**
  * @method removeEventListener
@@ -93,9 +157,9 @@ SNAKE.Snake =
     // Private static variables and methods
     // -------------------------------------------------------------------------
 
-    const blockPool = [];
+    var blockPool = [];
 
-    const SnakeBlock = function () {
+    var SnakeBlock = function () {
       this.elm = null;
       this.elmStyle = null;
       this.row = -1;
@@ -106,9 +170,10 @@ SNAKE.Snake =
 
     // this function is adapted from the example at http://greengeckodesign.com/blog/2007/07/get-highest-z-index-in-javascript.html
     function getNextHighestZIndex(myObj) {
-      let highestIndex = 0,
+      var highestIndex = 0,
         currentIndex = 0,
         ii;
+
       for (ii in myObj) {
         if (myObj[ii].elm.currentStyle) {
           currentIndex = parseFloat(myObj[ii].elm.style["z-index"], 10);
@@ -117,13 +182,17 @@ SNAKE.Snake =
             document.defaultView
               .getComputedStyle(myObj[ii].elm, null)
               .getPropertyValue("z-index"),
-            10,
+            10
           );
         }
+
         if (!isNaN(currentIndex) && currentIndex > highestIndex) {
           highestIndex = currentIndex;
         }
+
       }
+
+
       return highestIndex + 1;
     }
 
@@ -137,29 +206,30 @@ SNAKE.Snake =
           startRow - The row the snake should start on.
           startCol - The column the snake should start on.
           moveSnakeWithAI - function to move the snake with AI
+          oldDevice - true if we're dealing with a really old web browser
   */
     return function (config) {
       if (!config || !config.playingBoard) {
         return;
       }
-      if (localStorage[HIGH_SCORE_KEY] === undefined)
-        localStorage.setItem(HIGH_SCORE_KEY, 0);
-      if (localStorage.snakeSpeed === undefined)
-        localStorage.setItem("snakeSpeed", 400);
+      if (typeof window.localStorage[HIGH_SCORE_KEY] === "undefined")
+        window.localStorage.setItem(HIGH_SCORE_KEY, 0);
+      if (typeof window.localStorage.snakeSpeed === "undefined")
+        window.localStorage.setItem("snakeSpeed", 400);
 
       // ----- private variables -----
 
-      const me = this;
-      const playingBoard = config.playingBoard;
-      const growthIncr = 1;
-      const columnShift = [0, 1, 0, -1];
-      const rowShift = [-1, 0, 1, 0];
+      var me = this;
+      var playingBoard = config.playingBoard;
+      var growthIncr = 1;
+      var columnShift = [0, 1, 0, -1];
+      var rowShift = [-1, 0, 1, 0];
 
-      let lastMove = 1,
+      var lastMove = 1,
         preMove = -1,
         isFirstGameMove = true,
         currentDirection = -1, // 0: up, 1: left, 2: down, 3: right
-        snakeSpeed = localStorage.snakeSpeed,
+        snakeSpeed = window.localStorage.snakeSpeed || parseInt(document.getElementById("speed").value, 10),
         isDead = false,
         isPaused = false;
 
@@ -172,11 +242,11 @@ SNAKE.Snake =
       me.snakeBody["b0"].elmStyle = me.snakeBody["b0"].elm.style;
       playingBoard.getBoardContainer().appendChild(me.snakeBody["b0"].elm);
       me.snakeBody["b0"].elm.style.left = getLeftPosition(
-        me.snakeBody["b0"].col,
+        me.snakeBody["b0"].col
       );
       me.snakeBody["b0"].elm.style.top = getTopPosition(me.snakeBody["b0"].row);
       me.snakeBody["b0"].elm.style.backgroundColor = getPixelColor(
-        me.snakeBody["b0"].col,
+        me.snakeBody["b0"].col
       );
       me.snakeBody["b0"].next = me.snakeBody["b0"];
       me.snakeBody["b0"].prev = me.snakeBody["b0"];
@@ -186,7 +256,7 @@ SNAKE.Snake =
       me.snakeTail = me.snakeBody["b0"];
       me.snakeHead.elm.className = me.snakeHead.elm.className.replace(
         /\bsnake-snakebody-dead\b/,
-        "",
+        ""
       );
       me.snakeHead.elm.id = "snake-snakehead-alive";
       me.snakeHead.elm.className += " snake-snakebody-alive";
@@ -194,7 +264,7 @@ SNAKE.Snake =
       // ----- private methods -----
 
       function createSnakeElement() {
-        const tempNode = document.createElement("div");
+        var tempNode = document.createElement("div");
         tempNode.className = "snake-snakebody-block";
         tempNode.style.left = "-1000px";
         tempNode.style.top = "-1000px";
@@ -204,10 +274,10 @@ SNAKE.Snake =
       }
 
       function createBlocks(num) {
-        let tempBlock;
-        const tempNode = createSnakeElement();
+        var tempBlock;
+        var tempNode = createSnakeElement();
 
-        for (let ii = 1; ii < num; ii++) {
+        for (var ii = 1; ii < num; ii++) {
           tempBlock = new SnakeBlock();
           tempBlock.elm = tempNode.cloneNode(true);
           tempBlock.elmStyle = tempBlock.elm.style;
@@ -222,14 +292,14 @@ SNAKE.Snake =
       }
 
       function recordScore() {
-        const highScore = localStorage[HIGH_SCORE_KEY];
+        var highScore = window.localStorage[HIGH_SCORE_KEY];
         if (me.snakeLength > highScore) {
           alert(
             "Congratulations! You have beaten your previous high score, which was " +
             highScore +
-            ".",
+            "."
           );
-          localStorage.setItem(HIGH_SCORE_KEY, me.snakeLength);
+          window.localStorage.setItem(HIGH_SCORE_KEY, me.snakeLength);
         }
       }
 
@@ -238,7 +308,7 @@ SNAKE.Snake =
         me.snakeHead.elm.style.zIndex = getNextHighestZIndex(me.snakeBody);
         me.snakeHead.elm.className = me.snakeHead.elm.className.replace(
           /\bsnake-snakebody-alive\b/,
-          "",
+          ""
         );
         me.snakeHead.elm.className += " snake-snakebody-dead";
 
@@ -259,7 +329,7 @@ SNAKE.Snake =
        * This method sets the snake direction
        * @param direction
        */
-      me.setDirection = (direction) => {
+      me.setDirection = function (direction) {
         if (currentDirection !== lastMove) {
           // Allow a queue of 1 premove so you can turn again before the first turn registers
           preMove = direction;
@@ -288,7 +358,7 @@ SNAKE.Snake =
           return;
         }
 
-        let directionFound = -1;
+        var directionFound = -1;
 
         switch (keyNum) {
           case 37:
@@ -316,7 +386,7 @@ SNAKE.Snake =
        * @method go
        */
       me.go = function () {
-        const oldHead = me.snakeHead,
+        var oldHead = me.snakeHead,
           newHead = me.snakeTail,
           grid = playingBoard.grid; // cache grid for quicker lookup
 
@@ -330,11 +400,11 @@ SNAKE.Snake =
         // code to execute if snake is being moved by AI
         if (config.moveSnakeWithAI) {
           config.moveSnakeWithAI({
-            grid,
+            grid: grid,
             snakeHead: me.snakeHead,
-            currentDirection,
-            isFirstGameMove,
-            setDirection: me.setDirection,
+            currentDirection: currentDirection,
+            isFirstGameMove: isFirstGameMove,
+            setDirection: me.setDirection
           });
         }
 
@@ -364,7 +434,33 @@ SNAKE.Snake =
 
         newHead.elmStyle.left = getLeftPosition(newHead.col);
         newHead.elmStyle.top = getTopPosition(newHead.row);
-        newHead.elmStyle.backgroundColor = getPixelColor(newHead.col);
+
+        if (config.oldDevice) {
+          var snakeColors = {};
+          // first pass - set initial color
+          for (var prop in me.snakeBody) {
+            if (Object.prototype.hasOwnProperty.call(me.snakeBody, prop)) {
+              var snakeElm = me.snakeBody[prop];
+              snakeColors[snakeElm.col + '_' + snakeElm.row] = {r: 0, g: 0, b: 0};
+            }
+          }
+          // second pass - find the color for each snake block
+          for (var prop in me.snakeBody) {
+            if (Object.prototype.hasOwnProperty.call(me.snakeBody, prop)) {
+              var snakeElm = me.snakeBody[prop];
+              adjustColor(snakeColors[snakeElm.col + '_' + snakeElm.row], snakeElm.col);
+            }
+          }
+          // third pass - set the color for each snake block
+          for (var prop in me.snakeBody) {
+            if (Object.prototype.hasOwnProperty.call(me.snakeBody, prop)) {
+              var snakeElm = me.snakeBody[prop];
+              snakeElm.elmStyle.backgroundColor = getColorFromRGB(snakeColors[snakeElm.col + '_' + snakeElm.row]);
+            }
+          }
+        } else {
+          newHead.elmStyle.backgroundColor = getPixelColor(newHead.col);
+        }
 
         if (me.snakeLength > 1) {
           newHead.elm.id = "snake-snakehead-alive";
@@ -404,9 +500,9 @@ SNAKE.Snake =
         if (blockPool.length <= growthIncr) {
           createBlocks(growthIncr * 2);
         }
-        const blocks = blockPool.splice(0, growthIncr);
+        var blocks = blockPool.splice(0, growthIncr);
 
-        let ii = blocks.length,
+        var ii = blocks.length,
           index;
         prevNode = me.snakeTail;
         while (ii--) {
@@ -469,9 +565,9 @@ SNAKE.Snake =
           return;
         }
 
-        const blocks = [];
-        let curNode = me.snakeHead.next;
-        let nextNode;
+        var blocks = [];
+        var curNode = me.snakeHead.next;
+        var nextNode;
 
         while (curNode !== me.snakeHead) {
           nextNode = curNode.next;
@@ -485,12 +581,12 @@ SNAKE.Snake =
         me.snakeTail = me.snakeHead;
         me.snakeLength = 1;
 
-        for (let ii = 0; ii < blocks.length; ii++) {
+        for (var ii = 0; ii < blocks.length; ii++) {
           blocks[ii].elm.style.left = "-1000px";
           blocks[ii].elm.style.top = "-1000px";
           blocks[ii].elm.className = me.snakeHead.elm.className.replace(
             /\bsnake-snakebody-dead\b/,
-            "",
+            ""
           );
           blocks[ii].elm.className += " snake-snakebody-alive";
         }
@@ -498,7 +594,7 @@ SNAKE.Snake =
         blockPool.concat(blocks);
         me.snakeHead.elm.className = me.snakeHead.elm.className.replace(
           /\bsnake-snakebody-dead\b/,
-          "",
+          ""
         );
         me.snakeHead.elm.className += " snake-snakebody-alive";
         me.snakeHead.elm.id = "snake-snakehead-alive";
@@ -506,20 +602,20 @@ SNAKE.Snake =
         me.snakeHead.col = config.startCol || 1;
 
         me.snakeHead.elm.style.backgroundColor = getPixelColor(
-          me.snakeHead.col,
+          me.snakeHead.col
         );
 
         me.snakeHead.elm.style.left = getLeftPosition(me.snakeHead.col);
         me.snakeHead.elm.style.top = getTopPosition(me.snakeHead.row);
       };
 
-      me.getSpeed = () => {
+      me.getSpeed = function () {
         return snakeSpeed;
       };
 
-      me.setSpeed = (speed) => {
+      me.setSpeed = function (speed) {
         snakeSpeed = speed;
-        localStorage.setItem("snakeSpeed", speed);
+        window.localStorage.setItem("snakeSpeed", speed);
       };
 
       // ---------------------------------------------------------------------
@@ -544,7 +640,7 @@ SNAKE.Food =
     // Private static variables and methods
     // -------------------------------------------------------------------------
 
-    let instanceNumber = 0;
+    var instanceNumber = 0;
 
     function getRandomPosition(x, y) {
       return Math.floor(Math.random() * (y + 1 - x)) + x;
@@ -565,12 +661,12 @@ SNAKE.Food =
 
       // ----- private variables -----
 
-      const me = this;
-      const playingBoard = config.playingBoard;
-      let fRow, fColumn;
-      const myId = instanceNumber++;
+      var me = this;
+      var playingBoard = config.playingBoard;
+      var fRow, fColumn;
+      var myId = instanceNumber++;
 
-      const elmFood = document.createElement("div");
+      var elmFood = document.createElement("div");
       elmFood.setAttribute("id", "snake-food-" + myId);
       elmFood.className = "snake-food-block";
       elmFood.style.width = playingBoard.getBlockWidth() + "px";
@@ -603,12 +699,12 @@ SNAKE.Food =
           playingBoard.grid[fRow][fColumn] = 0;
         }
 
-        let row = 0,
+        var row = 0,
           col = 0,
           numTries = 0;
 
-        const maxRows = playingBoard.grid.length - 1;
-        const maxCols = playingBoard.grid[0].length - 1;
+        var maxRows = playingBoard.grid.length - 1;
+        var maxCols = playingBoard.grid[0].length - 1;
 
         while (playingBoard.grid[row][col] !== 0) {
           row = getRandomPosition(1, maxRows);
@@ -655,35 +751,35 @@ SNAKE.Board =
 
     return function (inputConfig) {
       // --- private variables ---
-      const me = this;
-      const config = inputConfig || {};
-      const GRID_FOOD_VALUE = -1; // the value of a spot on the board that represents snake food; MUST BE NEGATIVE
+      var me = this;
+      var config = inputConfig || {};
+      var GRID_FOOD_VALUE = -1; // the value of a spot on the board that represents snake food; MUST BE NEGATIVE
 
       if (!config.onLengthUpdate) {
-        config.onLengthUpdate = () => {
+        config.onLengthUpdate = function () {
         };
       }
       if (!config.onPauseToggle) {
-        config.onPauseToggle = () => {
+        config.onPauseToggle = function () {
         };
       }
       if (!config.onWin) {
-        config.onWin = () => {
+        config.onWin = function () {
         };
       }
       if (!config.onDeath) {
-        config.onDeath = () => {
+        config.onDeath = function () {
         };
       }
 
-      let myFood,
+      var myFood,
         mySnake,
         boardState = 1, // 0: in active, 1: awaiting game start, 2: playing game
         myKeyListener,
         isPaused = false; //note: both the board and the snake can be paused
 
       // Board components
-      let elmContainer, elmPlayingField;
+      var elmContainer, elmPlayingField;
 
       // --- public variables ---
       me.grid = [];
@@ -711,7 +807,7 @@ SNAKE.Board =
           function () {
             elmContainer.focus();
           },
-          false,
+          false
         );
 
         config.onLengthUpdate(1);
@@ -730,7 +826,7 @@ SNAKE.Board =
             }
             return false;
           },
-          false,
+          false
         );
 
         elmContainer.className = "snake-game-container";
@@ -743,6 +839,7 @@ SNAKE.Board =
           startCol: getStartCol(),
           premoveOnPause: config.premoveOnPause,
           moveSnakeWithAI: config.moveSnakeWithAI,
+          oldDevice: config.oldDevice
         });
         myFood = new SNAKE.Food({playingBoard: me});
       }
@@ -773,13 +870,13 @@ SNAKE.Board =
           elmContainer,
           "keydown",
           myKeyListener,
-          false,
+          false
         );
         SNAKE.removeEventListener(
           elmContainer,
           "keybuttonpress",
           myKeyListener,
-          false,
+          false
         );
         mySnake.reset();
         config.onLengthUpdate(1);
@@ -875,12 +972,12 @@ SNAKE.Board =
         elmPlayingField.style.height = config.rows + "px";
 
         me.grid = [];
-        const numBoardCols = config.columns;
-        const numBoardRows = config.rows;
+        var numBoardCols = config.columns;
+        var numBoardRows = config.rows;
 
-        for (let row = 0; row < numBoardRows; row++) {
+        for (var row = 0; row < numBoardRows; row++) {
           me.grid[row] = [];
-          for (let col = 0; col < numBoardCols; col++) {
+          for (var col = 0; col < numBoardCols; col++) {
             me.grid[row][col] = 0; // empty space
           }
         }
@@ -889,8 +986,8 @@ SNAKE.Board =
         myFood.randomlyPlaceFood();
 
         myKeyListener = function (evt) {
-          const keyNum = evt?.detail?.buttonPress
-            ? evt?.detail?.keyCode
+          var keyNum = evt.detail && evt.detail.buttonPress
+            ? evt.detail.keyCode
             : evt.which
               ? evt.which
               : evt.keyCode;
@@ -913,18 +1010,18 @@ SNAKE.Board =
               elmContainer,
               "keydown",
               myKeyListener,
-              false,
+              false
             );
             SNAKE.removeEventListener(
               elmContainer,
               "keybuttonpress",
               myKeyListener,
-              false,
+              false
             );
 
             myKeyListener = function (evt) {
-              const keyNum = evt?.detail?.buttonPress
-                ? evt?.detail?.keyCode
+              var keyNum = evt.detail && evt.detail.buttonPress
+                ? evt.detail.keyCode
                 : evt.which
                   ? evt.which
                   : evt.keyCode;
@@ -948,13 +1045,13 @@ SNAKE.Board =
               elmContainer,
               "keydown",
               myKeyListener,
-              false,
+              false
             );
             SNAKE.addEventListener(
               elmContainer,
               "keybuttonpress",
               myKeyListener,
-              false,
+              false
             );
 
             mySnake.rebirth();
@@ -980,7 +1077,7 @@ SNAKE.Board =
             elmContainer,
             "keybuttonpress",
             myKeyListener,
-            false,
+            false
           );
         }
       };
@@ -993,8 +1090,8 @@ SNAKE.Board =
        */
       me.foodEaten = function () {
         config.onLengthUpdate(mySnake.snakeLength);
-        if (mySnake.snakeLength > localStorage[HIGH_SCORE_KEY]) {
-          localStorage.setItem(HIGH_SCORE_KEY, mySnake.snakeLength);
+        if (mySnake.snakeLength > window.localStorage[HIGH_SCORE_KEY]) {
+          window.localStorage.setItem(HIGH_SCORE_KEY, mySnake.snakeLength);
         }
         if (!myFood.randomlyPlaceFood()) {
           return false;
@@ -1020,14 +1117,14 @@ SNAKE.Board =
         config.onWin({startAIGame: me.startAIGame});
       };
 
-      me.setSpeed = (speed) => {
+      me.setSpeed = function (speed) {
         mySnake.setSpeed(speed);
       };
-      me.getSpeed = () => {
+      me.getSpeed = function () {
         return mySnake.getSpeed();
       };
 
-      me.startAIGame = () => {
+      me.startAIGame = function () {
         me.resetBoard();
         mySnake.rebirth();
         me.setBoardState(2); // start the game!
@@ -1057,7 +1154,7 @@ SNAKE.Board =
           function () {
             me.setupPlayingField();
           },
-          false,
+          false
         );
       }
 
@@ -1067,17 +1164,17 @@ SNAKE.Board =
         me.setBoardContainer(config.boardContainer);
       }
 
-      const reloadGame = function () {
+      var reloadGame = function () {
         me.resetBoard();
         me.setBoardState(1);
         me.getBoardContainer().focus();
       };
 
       config.onInit({
-        reloadGame,
+        reloadGame: reloadGame,
         getSpeed: me.getSpeed,
         setSpeed: me.setSpeed,
-        startAIGame: me.startAIGame,
+        startAIGame: me.startAIGame
       });
     }; // end return function
   })();
